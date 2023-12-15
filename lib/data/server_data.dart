@@ -45,3 +45,5 @@ List<FormObject> serverFormData = [
     },
   ),
 ];
+
+get getFormObjects => [...serverFormData];
