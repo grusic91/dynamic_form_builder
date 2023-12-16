@@ -1,3 +1,4 @@
+import 'package:dynamic_form_builder/build_input_field.dart';
 import 'package:dynamic_form_builder/data/server_data.dart';
 import 'package:dynamic_form_builder/models/object.dart';
 
@@ -14,12 +15,12 @@ final class DynamicForm extends StatefulWidget {
 
 class _DynamicFormState extends State<DynamicForm> {
   final _formKey = GlobalKey<FormState>();
-  late List<FormObject> objects;
+  FormObject? object;
 
   @override
   void initState() {
     super.initState();
-    objects = getFormObjects;
+    object = getFormObjects;
   }
 
   @override
@@ -31,7 +32,12 @@ class _DynamicFormState extends State<DynamicForm> {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [...objects.map((entry) => TextFormField())],
+            children: [
+              if (object != null)
+                ...object!.name.entries
+                    .map((entry) => buildInputField())
+                    .toList(),
+            ],
           ),
         ),
       ),
