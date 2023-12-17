@@ -16,11 +16,26 @@ final class DynamicForm extends StatefulWidget {
 class _DynamicFormState extends State<DynamicForm> {
   final _formKey = GlobalKey<FormState>();
   FormObject? object;
+  late Map<String, FocusNode> _focusNodes = {};
 
   @override
   void initState() {
     super.initState();
     object = getFormObjects;
+    _initializeFocusNodes();
+  }
+
+  void _initializeFocusNodes() {
+    _focusNodes = {};
+    for (var lnaguageCode in languages) {
+      String key = 'name$lnaguageCode';
+      _focusNodes[key] = FocusNode();
+    }
+    // Initialize focus nodes for description
+    for (var languageCode in languages) {
+      String key = 'description$languageCode';
+      _focusNodes[key] = FocusNode();
+    }
   }
 
   @override
@@ -35,7 +50,19 @@ class _DynamicFormState extends State<DynamicForm> {
             children: [
               if (object != null)
                 ...object!.name.entries
-                    .map((entry) => buildInputField())
+                    .map((entry) => buildInputField(
+                          entry: entry,
+                          formKey: _formKey,
+                          fieldType: 'name',
+                          focusNodes: _focusNodes,
+                          object: object!,
+                          onInputValueChange:
+                              (String languageCode, String value) {
+                            setState(() {
+                              object!.name[languageCode] = value;
+                            });
+                          },
+                        ))
                     .toList(),
             ],
           ),

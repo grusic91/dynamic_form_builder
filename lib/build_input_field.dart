@@ -1,13 +1,46 @@
+import 'package:dynamic_form_builder/add_moe_languages_input_btn.dart';
+import 'package:dynamic_form_builder/data/server_data.dart';
+import 'package:dynamic_form_builder/models/object.dart';
 import 'package:flutter/material.dart';
 
-Widget buildInputField() {
+typedef OnInputValueChange = void Function(String languageCode, String value);
+
+Widget buildInputField({
+  entry,
+  formKey,
+  required String fieldType,
+  required Map<String, FocusNode> focusNodes,
+  required FormObject object,
+  required OnInputValueChange onInputValueChange,
+}) {
+  String languageCode = entry.key;
+  // Generate a unique key for each TextFormField
+  Key fieldKey = Key('${fieldType}_$languageCode');
+  String key = fieldType + languageCode;
+  FocusNode? focusNode = focusNodes[key];
   return Column(
     children: [
       Row(
         children: [
           Flexible(
-            child: TextFormField(),
-          )
+            child: TextFormField(
+              key: fieldKey,
+              focusNode: focusNode,
+              textCapitalization: TextCapitalization.sentences,
+              initialValue: '',
+              onChanged: (value) {
+                onInputValueChange(languageCode, value);
+              },
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          AddMoreLanguageInputButton(
+            languageCode: languageCode,
+            fieldType: fieldType,
+            object: object,
+          ),
         ],
       )
     ],
