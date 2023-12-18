@@ -38,6 +38,27 @@ class _DynamicFormState extends State<DynamicForm> {
     }
   }
 
+  void updateFormObjectInput(languages, String fieldType) {
+    Map<String, String> newFormTextInputValues = {};
+
+    for (var lang in languages) {
+      if (fieldType == 'name') {
+        newFormTextInputValues[lang] = object!.name[lang] ?? '';
+      } else {
+        newFormTextInputValues[lang] = object!.description[lang] ?? '';
+      }
+    }
+    if (fieldType == 'name') {
+      setState(() {
+        object!.name = newFormTextInputValues;
+      });
+    } else {
+      setState(() {
+        object!.description = newFormTextInputValues;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -49,6 +70,11 @@ class _DynamicFormState extends State<DynamicForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (object != null)
+                Text(
+                  "Set Name",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              if (object != null)
                 ...object!.name.entries
                     .map((entry) => buildInputField(
                           entry: entry,
@@ -56,10 +82,36 @@ class _DynamicFormState extends State<DynamicForm> {
                           fieldType: 'name',
                           focusNodes: _focusNodes,
                           object: object!,
+                          updateFormObjectInput: updateFormObjectInput,
                           onInputValueChange:
                               (String languageCode, String value) {
                             setState(() {
                               object!.name[languageCode] = value;
+                            });
+                          },
+                        ))
+                    .toList(),
+              const SizedBox(
+                height: 20,
+              ),
+              if (object != null)
+                Text(
+                  "Set Description",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              if (object != null)
+                ...object!.description.entries
+                    .map((entry) => buildInputField(
+                          entry: entry,
+                          formKey: _formKey,
+                          fieldType: 'description',
+                          focusNodes: _focusNodes,
+                          object: object!,
+                          updateFormObjectInput: updateFormObjectInput,
+                          onInputValueChange:
+                              (String languageCode, String value) {
+                            setState(() {
+                              object!.description[languageCode] = value;
                             });
                           },
                         ))

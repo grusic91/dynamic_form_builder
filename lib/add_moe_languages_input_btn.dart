@@ -8,12 +8,14 @@ final class AddMoreLanguageInputButton extends StatefulWidget {
   final String languageCode;
   final String fieldType;
   final FormObject object;
+  final Function updateFormObjectInput;
 
   const AddMoreLanguageInputButton({
     super.key,
     required this.languageCode,
     required this.fieldType,
     required this.object,
+    required this.updateFormObjectInput,
   });
 
   @override
@@ -82,7 +84,7 @@ class _AddMoreLanguageInputButtonState
   }
 
   void showAvailableLanguagesSelectorDialog() async {
-    Set<dynamic> selectedLanguages = widget.fieldType == 'name'
+    Set<String> selectedLanguages = widget.fieldType == 'name'
         ? Set.from(widget.object.name.keys)
         : Set.from(widget.object.description.keys);
 
@@ -101,13 +103,15 @@ class _AddMoreLanguageInputButtonState
                       controlAffinity: ListTileControlAffinity.leading,
                       value: selectedLanguages.contains(language.keys.first),
                       onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedLanguages.add(language.keys.first);
-                          } else {
-                            selectedLanguages.remove(language.keys.first);
-                          }
-                        });
+                        if (value == true || selectedLanguages.length > 1) {
+                          setState(() {
+                            if (value == true) {
+                              selectedLanguages.add(language.keys.first);
+                            } else {
+                              selectedLanguages.remove(language.keys.first);
+                            }
+                          });
+                        }
                       },
                     );
                   }).toList(),
@@ -115,6 +119,20 @@ class _AddMoreLanguageInputButtonState
               );
             },
           ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(selectedLanguages);
+              },
+              style: TextButton.styleFrom(backgroundColor: Colors.purple),
+              child: const Text(
+                "Apply",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            )
+          ],
         );
       },
     ).whenComplete(() {
@@ -126,6 +144,7 @@ class _AddMoreLanguageInputButtonState
     if (result != null) {
       setState(() {
         _selectedLanguages = result;
+        widget.updateFormObjectInput(_selectedLanguages, widget.fieldType);
       });
     }
   }
